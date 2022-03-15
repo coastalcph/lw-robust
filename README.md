@@ -113,7 +113,7 @@ You can use the following command to run the code:
 sh scripts/run_algo.sh
 ```
 
-For example to run experiments for EUR-LEX in the small-sized setting (20 labels) with the ERM algorithm with data grouped by applicant's gender:
+For example to run experiments for EUR-LEX in the small-sized setting (20 labels) with the ERM algorithm:
 
 ```bash
 ALGORITHM='ERM'
