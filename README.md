@@ -32,7 +32,13 @@ The code currently supports the following datasets:
 | MIMIC-III    |    `mimic`     |  `mimic20`, `mimic200` | https://physionet.org/content/mimiciii/      |
 
 
-You need to manually download the datasets and place the files in a folder named `/data/dataset/[ALIAS]_v[VERSION]/`, e.g., for `eurlex20` you have to create a folder named `/data/dataset/eurlex_v1.0/`
+### Use of Datasets Details 
+
+* In case of EUR-LEX, the code automatically fetch the dataset from the HuggingFace Hub (https://huggingface.co/datasets/multi_eurlex), so no further action is needed. We use the standard normalized numerical label names (0-20, 0-126, 0-566) provided by the HF dataset. Though, you can still access the original EUROVOC ID using dataset.features['labels'].feature.names[idx], where `idx` is the label number (e.g., 1, 16, 34).
+
+* In case of UK-LEX, you need to download the two dataset JSONL files from Zenodo (https://zenodo.org/record/6355465/) and place them in the relevant data folders (`uklex_v1.0` for the small 18-label set named `uk-lex18.jsonl` and `uklex_v2.0` for the medium 69-label set named `uk-lex69.jsonl`).
+
+* In case of BIOASQ, please contact us via e-mail to receive confidentially the custom JSONL files that include the labeling for the first 2 levels of the MeSH taxonomy, since the original files released by the BIOASQ website (http://bioasq.org/) include the labeling for the final level of the MeSH taxonomy. You'll may find the corresponding author e-mail here (https://iliaschalkidis.github.io/). Please, provide proof of registration to the BIOASQ competition website.
 
 ## Installation Requirements
 
@@ -40,12 +46,11 @@ You need to manually download the datasets and place the files in a folder named
 torch>=1.9.0
 transformers>=4.8.1
 requests>=2.25.1
-wilds>=1.2.0
+wilds==1.1.0
 scikit-learn>=0.24.1
 tqdm>=4.61.1
 numpy>=1.20.1
 pandas>=1.2.4
-pytorch_revgrad>=0.2.0
 datasets>=1.17.0
 ```
 
@@ -120,6 +125,7 @@ ALGORITHM='ERM'
 DATASET='eurlex20'
 SPLIT_SCHEME='official'
 N_GROUPS_PER_BATCH=16
+BATCH_SIZE=32
 MODEL='nlpaueb/legal-bert-small-uncased'
 ```
 
