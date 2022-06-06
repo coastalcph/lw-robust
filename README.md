@@ -9,7 +9,7 @@ Instead of simply resampling uniformly to hedge our bets, we focus on the underl
 
 [*Ilias Chalkidis and Anders Søgaard.*
 *Improved Multi-label Classification under Temporal Concept Drift: Rethinking Group-Robust Algorithms in a Label-Wise Setting.*
-*2022. In Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics, Dublin, Ireland.*](https://arxiv.org/abs/xxx/xxx)
+*2022. In Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics, Dublin, Ireland.*](https://aclanthology.org/2022.findings-acl.192/)
 ```
 @inproceedings{chalkidis-etal-2022-lw-robust,
       author={Chalkidis, Ilias and Søgaard, Anders},
