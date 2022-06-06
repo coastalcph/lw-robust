@@ -13,7 +13,6 @@ from transforms import initialize_transform
 from configs.utils import populate_defaults
 import configs.supported as supported
 from dataloaders import get_dataset
-from data import MODELS_DIR
 import logging
 
 logging.getLogger("transformers").setLevel(logging.ERROR)
@@ -147,10 +146,6 @@ def main():
         download=config.download,
         split_scheme=config.split_scheme,
         **config.dataset_kwargs)
-
-    # Model
-    if 'longformer' in config.model:
-        config.model = os.path.join(MODELS_DIR, config.model)
 
     # To implement data augmentation (i.e., have different transforms
     # at training time vs. test time), modify these two lines:

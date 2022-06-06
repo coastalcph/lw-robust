@@ -65,8 +65,7 @@ algorithm_defaults = {
         'uniform_over_groups': True,
         'distinct_groups': True,
         'eval_loader': 'standard',
-        'bmo_lambda': 0.1,
-        'bmo_alpha': 0.3,
+        'sd_lambda': 0.1,
     },
     'LWDROV2': {
         'train_loader': 'group',
@@ -74,7 +73,6 @@ algorithm_defaults = {
         'distinct_groups': True,
         'eval_loader': 'standard',
         'sd_lambda': 0.1,
-        'bmo_alpha': 0.3,
         'irm_lambda': 0.5,
         'irm_penalty_anneal_iters': 500,
     },

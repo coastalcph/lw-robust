@@ -1,6 +1,4 @@
 import copy
-import os
-import json
 import random
 
 import torch
@@ -10,22 +8,15 @@ from wilds.datasets.wilds_dataset import WILDSDataset
 from configs.supported import F1, binary_logits_to_pred_v2
 import numpy as np
 from grouper import CombinatorialGrouper
+from datasets import load_dataset
 
-EUROVOC_CONCEPTS = {'20': ["100149", "100160", "100148", "100147", "100152", "100143", "100156", "100158",
-                           "100154", "100153", "100142", "100145", "100150", "100162", "100159", "100144",
-                           "100151", "100157", "100161", "100146", "100155"],
-                    '100': ['100282', '100283', '100277', '100253', '100191', '100192', '100193', '100245', '100250',
-                            '100207', '100196', '100171', '100194', '100257', '100215', '100177', '100185', '100254',
-                            '100176', '100252', '100255', '100249', '100281', '100175', '100256', '100231', '100170',
-                            '100261', '100246', '100174', '100195', '100242', '100278', '100269', '100280', '100244',
-                            '100259', '100238', '100279', '100222', '100240', '100169', '100275', '100223', '100183',
-                            '100262', '100237', '100258', '100221', '100271', '100243', '100190', '100235', '100187',
-                            '100179', '100229', '100197', '100270', '100224', '100247', '100239', '100260', '100206',
-                            '100220', '100230', '100268', '100168', '100200', '100226', '100205', '100201', '100232',
-                            '100180', '100272', '100172', '100199', '100241', '100186', '100212', '100248', '100263',
-                            '100202', '100233', '100266', '100276', '100214', '100173', '100265', '100163', '100273',
-                            '100204', '100227', '100274', '100198', '100184', '100264', '100189', '100234', '100216',
-                            '100285'],
+EUROVOC_CONCEPTS = {'20': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                    '100': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+                            25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+                            48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
+                            71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93,
+                            94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
+                            113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126],
                     '500': [0, 1, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27,
                             28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
                             51, 52, 53, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74,
@@ -94,22 +85,24 @@ class EURLEXDataset(WILDSDataset):
 
     def __init__(self, version=None, root_dir='data', download=False, split_scheme='official'):
         self._version = version
+        self._data_dir = 'data/datasets/eurlex'
         if self._version == '1.0':
             self.concepts = EUROVOC_CONCEPTS['20']
+            self.label_level = 'level_1'
         elif self._version == '2.0':
             self.concepts = EUROVOC_CONCEPTS['100']
+            self.label_level = 'level_2'
         elif self._version == '3.0':
             self.concepts = EUROVOC_CONCEPTS['500']
+            self.label_level = 'level_3'
         # the official split is the only split
         self._split_scheme = split_scheme
         self._y_type = 'long'
         self._y_size = len(self.concepts)
         self._n_classes = len(self.concepts)
         self.prediction_fn = binary_logits_to_pred_v2
-        # path
-        self._data_dir = self.initialize_data_dir(root_dir, download)
         # Load data
-        self.data_df = self.read_jsonl(self.data_dir)
+        self.data_df = self.read_hf_dataset()
         print(self.data_df.head())
 
         # Get arrays
@@ -175,14 +168,13 @@ class EURLEXDataset(WILDSDataset):
         else:
             raise ValueError(f'Split scheme {self.split_scheme} not recognized')
 
-    def read_jsonl(self, data_dir):
+    def read_hf_dataset(self):
         data = []
-        with open(os.path.join(data_dir, f'eurlex.jsonl')) as fh:
-            for line in tqdm.tqdm(fh):
-                example = json.loads(line)
-                example['labels'] = [1 if article in example['labels'] else 0 for article in
-                                     self.concepts]
-                example['data_type'] = example['data_type'] if example['data_type'] != 'dev' else 'val'
+        for subset in ['train', 'validation', 'test']:
+            dataset = load_dataset('multi_eurlex', 'en', label_level=self.label_level, split=subset)
+            for example in tqdm.tqdm(dataset):
+                example['labels'] = [1 if article in example['labels'] else 0 for article in self.concepts]
+                example['data_type'] = subset if subset != 'validation' else 'val'
                 data.append(example)
 
         if self.split_scheme == 'shuffled':

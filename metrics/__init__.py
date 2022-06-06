@@ -1,5 +1,4 @@
 import torch
-import torch_scatter
 
 def get_counts(g):
     """

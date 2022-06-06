@@ -65,8 +65,10 @@ class UKLEXDataset(WILDSDataset):
         self._version = version
         if self._version == '1.0':
             self.concepts = LABELS['18']
+            self.dataset_filename = 'uk-lex18.jsonl'
         else:
             self.concepts = LABELS['69']
+            self.dataset_filename = 'uk-lex69.jsonl'
         # the official split is the only split
         self._split_scheme = split_scheme
         self._y_type = 'long'
@@ -144,7 +146,7 @@ class UKLEXDataset(WILDSDataset):
 
     def read_jsonl(self, data_dir):
         data = []
-        with open(os.path.join(data_dir, f'uk_legislation.jsonl')) as fh:
+        with open(os.path.join(data_dir, self.dataset_filename)) as fh:
             for line in tqdm.tqdm(fh):
                 example = json.loads(line)
                 example['text'] = example['title'] + ' [SEP] ' + example['body']

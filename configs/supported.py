@@ -58,13 +58,13 @@ process_outputs_functions = {
 transforms = ['bert']
 models = ['nlpaueb/legal-bert-small-uncased', 'lwan/nlpaueb/legal-bert-small-uncased', 'google/bert_uncased_L-6_H-512_A-8',
           'lwan/google/bert_uncased_L-6_H-512_A-8']
-algorithms = ['ERM', 'groupDRO', 'deepCORAL', 'IRM', 'spectralDecoupling', 'REx', 'Mean',
+algorithms = ['ERM', 'groupDRO', 'deepCORAL', 'IRM', 'spectralDecoupling', 'REx', 'groupUniform',
               'LWDROV1', 'LWDROV2', 'minMax', 'minSTD']
-optimizers = ['SGD', 'Adam', 'AdamW']
+optimizers = ['AdamW']
 schedulers = ['linear_schedule_with_warmup', 'ReduceLROnPlateau', 'StepLR']
 
 # supported datasets
 supported_datasets = wilds.supported_datasets + ['eurlex20', 'eurlex100', 'eurlex500',
-                                                 'uklex18', 'uklex69'
+                                                 'uklex18', 'uklex69',
                                                  'bioasq16', 'bioasq116',
                                                  'mimic20', 'mimic200']
